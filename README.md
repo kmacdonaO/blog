@@ -1,4 +1,4 @@
-# About My Blog Sample
+# About This Blog Sample
 
 This repository holds the sample source code for a Gatsby implementation of a blog site powered by Oracle Content Management.
 
