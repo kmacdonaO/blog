@@ -5,6 +5,40 @@
 
 require('dotenv').config();
 
+let serverUrl;
+let channelToken;
+let proxyUrl;
+let clientScopeUrl;
+let clientId;
+let clientSecret;
+let idpUrl;
+let isPreview = false;
+console.log('process.env.INCOMING_HOOK_BODY', process.env.INCOMING_HOOK_BODY);
+let incomingHookBody = decodeURIComponent(process.env.INCOMING_HOOK_BODY || '');
+if (incomingHookBody) {
+  try {
+    incomingHookBody = JSON.parse(incomingHookBody);
+    serverUrl = incomingHookBody.SERVER_URL;
+    channelToken = incomingHookBody.CHANNEL_TOKEN;
+    proxyUrl = incomingHookBody.PROXY_URL;
+    clientScopeUrl = incomingHookBody.CLIENT_SCOPE_URL;
+    clientId = incomingHookBody.CLIENT_ID;
+    clientSecret = incomingHookBody.CLIENT_SECRET;
+    idpUrl = incomingHookBody.IDP_URL;
+    isPreview = incomingHookBody.PREVIEW;
+    console.log('INCOMING_HOOK_BODY.SERVER_URL', serverUrl);
+    console.log('INCOMING_HOOK_BODY.CHANNEL_TOKEN', channelToken);
+    console.log('INCOMING_HOOK_BODY.PROXY_URL', proxyUrl);
+    console.log('INCOMING_HOOK_BODY.CLIENT_SCOPE_URL', clientScopeUrl);
+    console.log('INCOMING_HOOK_BODY.CLIENT_ID', clientId);
+    console.log('INCOMING_HOOK_BODY.CLIENT_SECRET', clientSecret);
+    console.log('INCOMING_HOOK_BODY.IDP_URL', idpUrl);
+    console.log('INCOMING_HOOK_BODY.PREVIEW', incomingHookBody);
+  } catch (e) {
+    console.error('Error parsing INCOMING_HOOK_BODY', incomingHookBody);
+  }
+}
+
 module.exports = {
   pathPrefix: process.env.PATH_PREFIX,
   siteMetadata: {
@@ -24,9 +58,9 @@ module.exports = {
       resolve: '@oracle/gatsby-source-oce',
       options: {
         name: 'oce',
-        contentServer: process.env.SERVER_URL,
-        channelToken: process.env.CHANNEL_TOKEN,
-        proxyUrl: process.env.PROXY_URL,
+        contentServer: serverUrl || process.env.SERVER_URL,
+        channelToken: channelToken || process.env.CHANNEL_TOKEN,
+        proxyUrl: proxyUrl || process.env.PROXY_URL,
         items: {
           limit: 4,
           query: '',
@@ -40,12 +74,12 @@ module.exports = {
         staticUrlPrefix: process.env.PATH_PREFIX,
         authStr: process.env.AUTH,
         oAuthSettings: {
-          clientId: process.env.CLIENT_ID,
-          clientSecret: process.env.CLIENT_SECRET,
-          clientScopeUrl: process.env.CLIENT_SCOPE_URL,
-          idpUrl: process.env.IDP_URL,
+          clientId: clientId || process.env.CLIENT_ID,
+          clientSecret: clientSecret || process.env.CLIENT_SECRET,
+          clientScopeUrl: clientScopeUrl || process.env.CLIENT_SCOPE_URL,
+          idpUrl: idpUrl || process.env.IDP_URL,
         },
-        preview: process.env.PREVIEW,
+        preview: isPreview || process.env.PREVIEW,
         debug: false,
       },
     },
